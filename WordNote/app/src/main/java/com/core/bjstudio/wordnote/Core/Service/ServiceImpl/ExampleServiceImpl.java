@@ -1,5 +1,6 @@
 package com.core.bjstudio.wordnote.Core.Service.ServiceImpl;
 
+import com.core.bjstudio.wordnote.Core.Annontation.AnnotationImpl.CascadeDeleteHandler;
 import com.core.bjstudio.wordnote.Core.Model.Example;
 import com.core.bjstudio.wordnote.Core.Service.DBHelper.RealmSingleton;
 import com.core.bjstudio.wordnote.Core.Service.ExampleService;
@@ -7,6 +8,8 @@ import com.core.bjstudio.wordnote.Util.Exception.AddDataException;
 import com.core.bjstudio.wordnote.Util.Exception.DeleteDataException;
 import com.core.bjstudio.wordnote.Util.Exception.NoDataException;
 import com.core.bjstudio.wordnote.Util.Exception.UpdateDataException;
+
+import java.util.Iterator;
 
 import io.realm.Realm;
 import io.realm.RealmResults;
@@ -72,6 +75,27 @@ public class ExampleServiceImpl implements ExampleService {
             throw new NoDataException("Data is not exist - id: "+id);
         } else {
             try {
+                RealmSingleton.getInstance().<Example>cascdeDelete(examples);
+                RealmSingleton.getInstance().getRealm().executeTransaction(new Realm.Transaction() {
+                    @Override
+                    public void execute(Realm realm) {
+                        examples.deleteAllFromRealm();
+                    }
+                });
+            } catch (Exception e) {
+                throw new DeleteDataException(e.getMessage());
+            }
+        }
+    }
+
+    @Override
+    public void deleteAllEntity() throws DeleteDataException, NoDataException {
+        final RealmResults<Example> examples = RealmSingleton.getInstance().getRealm().where(Example.class).findAll();
+        if(examples.isEmpty()) {
+            throw new NoDataException("Data is not exist");
+        } else {
+            try {
+                RealmSingleton.getInstance().<Example>cascdeDelete(examples);
                 RealmSingleton.getInstance().getRealm().executeTransaction(new Realm.Transaction() {
                     @Override
                     public void execute(Realm realm) {
@@ -91,6 +115,7 @@ public class ExampleServiceImpl implements ExampleService {
             throw new NoDataException("Data is not exist - example: "+example);
         } else {
             try {
+                RealmSingleton.getInstance().<Example>cascdeDelete(examples);
                 RealmSingleton.getInstance().getRealm().executeTransaction(new Realm.Transaction() {
                     @Override
                     public void execute(Realm realm) {

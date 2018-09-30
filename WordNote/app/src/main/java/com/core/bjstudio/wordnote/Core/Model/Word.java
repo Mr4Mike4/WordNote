@@ -1,5 +1,7 @@
 package com.core.bjstudio.wordnote.Core.Model;
 
+import com.core.bjstudio.wordnote.Core.Annontation.CascadeDelete;
+
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 import io.realm.annotations.Required;
@@ -10,11 +12,13 @@ import io.realm.annotations.Required;
 
 public class Word extends RealmObject {
     @PrimaryKey
-    @Required
     private int id;
 
-    @Required
+    @CascadeDelete
     private WordDetail wordDetail;
+
+    public Word() {
+    }
 
     public Word(int id, WordDetail wordDetail) {
         this.id = id;

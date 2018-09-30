@@ -29,4 +29,5 @@ public interface EntityService<T extends RealmObject> {
     public void addEntity(T t) throws AddDataException;
     public void updateEntity(T t) throws UpdateDataException;
     public void deleteEntity(int id) throws DeleteDataException,NoDataException;
+    public void deleteAllEntity() throws DeleteDataException, NoDataException;
 }

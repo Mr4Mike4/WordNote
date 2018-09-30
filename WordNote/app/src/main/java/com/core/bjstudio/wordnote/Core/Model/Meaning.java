@@ -12,12 +12,14 @@ import io.realm.annotations.Required;
 
 public class Meaning extends RealmObject {
     @PrimaryKey
-    @Required
     private int id;
 
     @Required
     private String meaning;
     private Date createDate;
+
+    public Meaning() {
+    }
 
     public Meaning(int id, String meaning) {
         this.id = id;

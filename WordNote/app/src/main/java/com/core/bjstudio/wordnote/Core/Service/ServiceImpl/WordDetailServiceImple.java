@@ -84,6 +84,27 @@ public class WordDetailServiceImple implements WordDetailService {
             throw new NoDataException("Data is not exist - id: "+id);
         } else {
             try {
+                RealmSingleton.getInstance().<WordDetail>cascdeDelete(wordDetails);
+                RealmSingleton.getInstance().getRealm().executeTransaction(new Realm.Transaction() {
+                    @Override
+                    public void execute(Realm realm) {
+                        wordDetails.deleteAllFromRealm();
+                    }
+                });
+            } catch (Exception e) {
+                throw new DeleteDataException(e.getMessage());
+            }
+        }
+    }
+
+    @Override
+    public void deleteAllEntity() throws DeleteDataException, NoDataException {
+        final RealmResults<WordDetail> wordDetails = RealmSingleton.getInstance().getRealm().where(WordDetail.class).findAll();
+        if(wordDetails.isEmpty()) {
+            throw new NoDataException("Data is not exist");
+        } else {
+            try {
+                RealmSingleton.getInstance().<WordDetail>cascdeDelete(wordDetails);
                 RealmSingleton.getInstance().getRealm().executeTransaction(new Realm.Transaction() {
                     @Override
                     public void execute(Realm realm) {
@@ -103,6 +124,7 @@ public class WordDetailServiceImple implements WordDetailService {
             throw new NoDataException("Data is not exist - word: "+word);
         } else {
             try {
+                RealmSingleton.getInstance().<WordDetail>cascdeDelete(wordDetails);
                 RealmSingleton.getInstance().getRealm().executeTransaction(new Realm.Transaction() {
                     @Override
                     public void execute(Realm realm) {

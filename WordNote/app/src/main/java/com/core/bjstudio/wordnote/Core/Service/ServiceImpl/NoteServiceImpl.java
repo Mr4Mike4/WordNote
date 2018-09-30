@@ -1,12 +1,16 @@
 package com.core.bjstudio.wordnote.Core.Service.ServiceImpl;
 
+import com.core.bjstudio.wordnote.Core.Annontation.AnnotationImpl.CascadeDeleteHandler;
 import com.core.bjstudio.wordnote.Core.Model.Note;
 import com.core.bjstudio.wordnote.Core.Service.DBHelper.RealmSingleton;
 import com.core.bjstudio.wordnote.Core.Service.NoteService;
 import com.core.bjstudio.wordnote.Util.Exception.AddDataException;
+import com.core.bjstudio.wordnote.Util.Exception.CustomLog;
 import com.core.bjstudio.wordnote.Util.Exception.DeleteDataException;
 import com.core.bjstudio.wordnote.Util.Exception.NoDataException;
 import com.core.bjstudio.wordnote.Util.Exception.UpdateDataException;
+
+import java.util.Iterator;
 
 import io.realm.Realm;
 import io.realm.RealmResults;
@@ -71,6 +75,27 @@ public class NoteServiceImpl implements NoteService {
             throw new NoDataException("Data is not exist - id: "+id);
         } else {
             try {
+                RealmSingleton.getInstance().<Note>cascdeDelete(notes);
+                RealmSingleton.getInstance().getRealm().executeTransaction(new Realm.Transaction() {
+                    @Override
+                    public void execute(Realm realm) {
+                        notes.deleteAllFromRealm();
+                    }
+                });
+            } catch (Exception e) {
+                throw new DeleteDataException(e.getMessage());
+            }
+        }
+    }
+
+    @Override
+    public void deleteAllEntity() throws DeleteDataException, NoDataException {
+        final RealmResults<Note> notes = RealmSingleton.getInstance().getRealm().where(Note.class).findAll();
+        if(notes.isEmpty()) {
+            throw new NoDataException("Data is not exist");
+        } else {
+            try {
+                RealmSingleton.getInstance().<Note>cascdeDelete(notes);
                 RealmSingleton.getInstance().getRealm().executeTransaction(new Realm.Transaction() {
                     @Override
                     public void execute(Realm realm) {

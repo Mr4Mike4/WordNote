@@ -1,5 +1,6 @@
 package com.core.bjstudio.wordnote.Core.Service.ServiceImpl;
 
+import com.core.bjstudio.wordnote.Core.Annontation.AnnotationImpl.CascadeDeleteHandler;
 import com.core.bjstudio.wordnote.Core.Model.Word;
 import com.core.bjstudio.wordnote.Core.Service.DBHelper.RealmSingleton;
 import com.core.bjstudio.wordnote.Core.Service.WordService;
@@ -71,6 +72,27 @@ public class WordServiceImpl implements WordService {
             throw new NoDataException("Data is not exist - id: "+id);
         } else {
             try {
+                RealmSingleton.getInstance().<Word>cascdeDelete(words);
+                RealmSingleton.getInstance().getRealm().executeTransaction(new Realm.Transaction() {
+                    @Override
+                    public void execute(Realm realm) {
+                        words.deleteAllFromRealm();
+                    }
+                });
+            } catch (Exception e) {
+                throw new DeleteDataException(e.getMessage());
+            }
+        }
+    }
+
+    @Override
+    public void deleteAllEntity() throws DeleteDataException, NoDataException {
+        final RealmResults<Word> words = RealmSingleton.getInstance().getRealm().where(Word.class).findAll();
+        if(words.isEmpty()) {
+            throw new NoDataException("Data is not exist");
+        } else {
+            try {
+                RealmSingleton.getInstance().<Word>cascdeDelete(words);
                 RealmSingleton.getInstance().getRealm().executeTransaction(new Realm.Transaction() {
                     @Override
                     public void execute(Realm realm) {

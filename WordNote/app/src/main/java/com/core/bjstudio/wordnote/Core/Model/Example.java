@@ -12,11 +12,12 @@ import io.realm.annotations.Required;
 
 public class Example extends RealmObject {
     @PrimaryKey
-    @Required
     private int id;
 
     private String example;
     private Date createDate;
+
+    public Example() {}
 
     public Example(int id) {
         this.id = id;

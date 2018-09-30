@@ -1,5 +1,6 @@
 package com.core.bjstudio.wordnote.Core.Service.ServiceImpl;
 
+import com.core.bjstudio.wordnote.Core.Annontation.AnnotationImpl.CascadeDeleteHandler;
 import com.core.bjstudio.wordnote.Core.Model.Meaning;
 import com.core.bjstudio.wordnote.Core.Service.DBHelper.RealmSingleton;
 import com.core.bjstudio.wordnote.Core.Service.MeaningService;
@@ -7,6 +8,8 @@ import com.core.bjstudio.wordnote.Util.Exception.AddDataException;
 import com.core.bjstudio.wordnote.Util.Exception.DeleteDataException;
 import com.core.bjstudio.wordnote.Util.Exception.NoDataException;
 import com.core.bjstudio.wordnote.Util.Exception.UpdateDataException;
+
+import java.util.Iterator;
 
 import io.realm.Realm;
 import io.realm.RealmResults;
@@ -84,6 +87,27 @@ public class MeaningServiceImpl implements MeaningService {
             throw new NoDataException("Data is not exist - id: "+id);
         } else {
             try {
+                RealmSingleton.getInstance().<Meaning>cascdeDelete(meanings);
+                RealmSingleton.getInstance().getRealm().executeTransaction(new Realm.Transaction() {
+                    @Override
+                    public void execute(Realm realm) {
+                        meanings.deleteAllFromRealm();
+                    }
+                });
+            } catch (Exception e) {
+                throw new DeleteDataException(e.getMessage());
+            }
+        }
+    }
+
+    @Override
+    public void deleteAllEntity() throws DeleteDataException, NoDataException {
+        final RealmResults<Meaning> meanings = RealmSingleton.getInstance().getRealm().where(Meaning.class).findAll();
+        if(meanings.isEmpty()) {
+            throw new NoDataException("Data is not exist");
+        } else {
+            try {
+                RealmSingleton.getInstance().<Meaning>cascdeDelete(meanings);
                 RealmSingleton.getInstance().getRealm().executeTransaction(new Realm.Transaction() {
                     @Override
                     public void execute(Realm realm) {
@@ -103,6 +127,7 @@ public class MeaningServiceImpl implements MeaningService {
             throw new NoDataException("Data is not exist - meaning: "+meaning);
         } else {
             try {
+                RealmSingleton.getInstance().<Meaning>cascdeDelete(meanings);
                 RealmSingleton.getInstance().getRealm().executeTransaction(new Realm.Transaction() {
                     @Override
                     public void execute(Realm realm) {

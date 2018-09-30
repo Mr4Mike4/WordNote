@@ -1,5 +1,7 @@
 package com.core.bjstudio.wordnote.Core.Model;
 
+import com.core.bjstudio.wordnote.Core.Annontation.CascadeDelete;
+
 import java.util.Date;
 
 import io.realm.RealmList;
@@ -14,16 +16,19 @@ import io.realm.annotations.Required;
 
 public class NoteDetail extends RealmObject {
     @PrimaryKey
-    @Required
     private int id;
     @Required
     private String name;
     private Date createDate;
 
+    @CascadeDelete
     private RealmList<Word> words;
 
     @Ignore
     private final static String DEFAULT_NAME = "Default";
+
+    public NoteDetail() {
+    }
 
     public NoteDetail(int id) {
         this.id = id;
